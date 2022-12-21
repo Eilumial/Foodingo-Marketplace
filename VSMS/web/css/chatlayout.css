@@ -1,0 +1,48 @@
+/*Flex box message*/
+.chat,
+.chat-messages{
+    display:flex;
+    flex-direction:column;
+    flex:1;
+    justify-content:space-between;
+}
+.chat{
+    height: 100%;
+    border: black solid;
+}
+.chat-messages{
+    border: black red;
+}
+.chat-header{
+    background-color:black;
+    color:white;
+    text-align:center;
+}
+.chat-toolbar{
+    background-color: blueviolet;
+    color:white;
+    text-align:center;
+}
+.chat-footer{
+    margin-top:auto;
+}
+.chat-footer input{
+    display:block;
+    width:100%
+}
+
+.chat ul {
+    list-style: none;
+    margin: 0px;
+    padding: 20px;
+    height: 200px;
+    overflow: auto; 
+}
+.chat ul li {
+    margin-bottom: 10px;
+    line-height: 24px; 
+}
+.chat ul li:last-child {
+    margin: 0px; }
+.chat ul .chat-name {
+    margin-right: 10px; }

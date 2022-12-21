@@ -1,0 +1,59 @@
+.background{
+    /*
+    background-color: tomato;
+    
+    background: linear-gradient(130deg, #00004d 20%, black 100%) no-repeat center center fixed;
+   */
+
+   background-image: url("../resource/pictures/grass.jpg");
+   background-size: 1920px 1080px;
+   
+    background-repeat: no-repeat;
+    
+    opacity: 0.9;
+}
+
+body, .ui.vertical.divider {
+    color: #696969;
+}
+
+.ui.vertical.divider {
+    margin: 0 4px;
+}
+
+.ui.raised.segment {
+    background-color: #fffacd;
+    width: 600px;
+    margin-top: 0;
+    position: fixed;
+    left: 10px;
+    top: 10px;
+}
+
+.footer {
+    text-align: right;
+}
+
+.text {
+    display: inline;
+}
+
+a {
+    text-decoration: none;
+    color: #1E90FF;
+}
+
+.flex-container {
+  /* We first create a flex layout context */
+  display: flex;
+  
+  /* Then we define the flow direction and if we allow the items to wrap 
+   * Remember this is the same as:
+   * flex-direction: row;
+   * flex-wrap: wrap;
+   */
+  flex-flow: row wrap;
+  
+  /* Then we define how is distributed the remaining space */
+  justify-content: space-around;
+}
