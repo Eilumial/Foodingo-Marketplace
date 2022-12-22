@@ -12,8 +12,9 @@ public class Vendor {
     private int area_code;
     private int telephone_number;
     private String address;
+    private int zipcode;
 
-    public Vendor(int vendor_id, String password, String vendor_name, String vendor_description, String email, int area_code, int telephone_number, String address) {
+    public Vendor(int vendor_id, String password, String vendor_name, String vendor_description, String email, int area_code, int telephone_number, String address, int zipcode) {
         this.vendor_id = vendor_id;
         this.password = password;
         this.vendor_name = vendor_name;
@@ -22,6 +23,15 @@ public class Vendor {
         this.area_code = area_code;
         this.telephone_number = telephone_number;
         this.address = address;
+        this.zipcode = zipcode;
+    }
+
+    public int getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(int zipcode) {
+        this.zipcode = zipcode;
     }
 
     public String getEmail() {
@@ -89,7 +99,7 @@ public class Vendor {
     }
 
     public String toString() {
-        return "Vendor ID: " + vendor_id + ", name: " + vendor_name + ", password: " + password + " description " + vendor_description +", email: "+email+" telephone_number "+area_code+telephone_number +" address "+address;
+        return "Vendor ID: " + vendor_id + ", name: " + vendor_name + ", password: " + password + " description " + vendor_description +", email: "+email+" telephone_number "+area_code+telephone_number +" address "+address+ " zipcode "+zipcode;
     }
     @Override
     public int hashCode() {

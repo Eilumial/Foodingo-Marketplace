@@ -27,20 +27,20 @@ public class Test {
         String subject = "Receiving order from <supplier>; Order ID : ...";
 
         if (!user.equals("") && !password.equals("")) {
-          EmailController emailController = new EmailController(host,user,password);
-//          emailController.sendMessage("vincentt.2013@sis.smu.edu.sg","Receiving order from <supplier>; Order ID : ...", "Your order is tested here \n Hello I am your <ul><li>d</li></ul>");
+          EmailController emailController = new EmailController();
+//          emailControllerAWS.sendMessage("vincentt.2013@sis.smu.edu.sg","Receiving order from <supplier>; Order ID : ...", "Your order is tested here \n Hello I am your <ul><li>d</li></ul>");
         } else {
             System.out.println("User email and password are empty. Please correct the problem");
         }
         
-        Order order = OrderDAO.retrieveOrderByID(10);
+        Order order = OrderDAO.retrieveOrderByID(3);
         Vendor vendor = UserDAO.getVendorByID(order.getVendor_id());
         
         //Getting hashmap of supplier and text message to send to each supplier / vendor
         HashMap<Integer,String> suppOrderMap = EmailController.supplierMessageList(order);
         
-        EmailController.sendMessageToSuppliers(vendor.getVendor_name(),suppOrderMap);
-        EmailController.sendMessageToVendor(vendor, suppOrderMap);
+        EmailController.sendMessageToSuppliers(vendor,order,suppOrderMap,"");
+        EmailController.sendMessageToVendor(vendor,order, suppOrderMap,"");
     }
       
     

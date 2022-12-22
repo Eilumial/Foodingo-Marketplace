@@ -8,46 +8,46 @@ package javamail;
 import Controller.OrderController;
 import Controller.UserController;
 import Controller.UtilityController;
+import DAO.OrderDAO;
 import DAO.UserDAO;
 import Model.Order;
 import Model.Orderline;
 import Model.Supplier;
 import Model.Vendor;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import org.apache.commons.codec.digest.DigestUtils;
 
 /**
  *
  * @author vincentt.2013
  */
-public class EmailController {
+public class EmailControllerAWS {
 
-    private static String host = "smtp.gmail.com";
-    private static String user = "ognidoof";
-    private static String password = "AbC12321CbA";
+    private static String host = "email-smtp.us-west-2.amazonaws.com";
 
-    public EmailController() {
+    private static String user = "AKIAISJWKZRDXAJ2UNTQ";
+    private static String password = "AqAvQKUVFnTtsjzWqrDt9hY2JqzFGHxP6Q0MaYlGgy2A";
+    private static int port = 587;
 
-    }
+    private static String from = "ognidoof@gmail.com";
 
-    public EmailController(String host, String user, String password) {
-        this.host = host;
-        this.user = user;
-        this.password = password;
+    public EmailControllerAWS() {
     }
 
 //    This method is to send confirmation message after the supplier has approved/ disapproved
     public static void sendConfirmationMessageToVendorSupplier(Order order, int vendor_id, String action) {
         if (!user.equals("") && !password.equals("")) {
-            EmailController emailController = new EmailController("smtp.gmail.com", "ognidoof", "AbC12321CbA");
+            EmailControllerAWS emailController = new EmailControllerAWS();
         } else {
             System.out.println("User email and password are empty. Please correct the problem");
         }
@@ -57,37 +57,34 @@ public class EmailController {
         HashMap<Integer, String> suppOrderMap = supplierMessageList(order);
 
         //Getting confirmation for vendors and suppliers
-        String confirmation = "";
+        String confirmation = "<h3>Your order has been ";
         if (action.equals("approve")) {
-            confirmation += "<h3>Your order has been <font color='green'>" + action + "d</font></h3>";
-            confirmation += "<h4><font color='green'>Expected Delivery Arrival:" + order.getExpected_delivery() + " </font></h4>";
+            confirmation += "<font color='green'>" + action + "d</font>";
         } else {
-            confirmation += "<h3>Your order has been <font color='red'>" + action + "ed</font></h3>";
+            confirmation += "<font color='red'>" + action + "ed</font>";
         }
-
-        EmailController.sendMessageToSuppliers(vendor, order, suppOrderMap, confirmation);
-        EmailController.sendMessageToVendor(vendor, order, suppOrderMap, confirmation);
+        confirmation += "</h3>";
+        EmailControllerAWS.sendMessageToSuppliers(vendor, order, suppOrderMap, confirmation);
+        EmailControllerAWS.sendMessageToVendor(vendor, order, suppOrderMap, confirmation);
     }
 
 //    This method is to send order message after orders have been created
     public static void sendOrderMessageToVendorSupplier(Order order, int vendor_id) {
         if (!user.equals("") && !password.equals("")) {
-            EmailController emailController = new EmailController("smtp.gmail.com", "ognidoof", "AbC12321CbA");
+            EmailControllerAWS emailController = new EmailControllerAWS();
         } else {
             System.out.println("User email and password are empty. Please correct the problem");
         }
         //Getting vendor
         Vendor vendor = UserController.retrieveVendorByID(vendor_id);
         //Getting hashmap of supplier and text message to send to each supplier / vendor
-        HashMap<Integer, String> suppOrderMap = EmailController.supplierMessageList(order);
+        HashMap<Integer, String> suppOrderMap = EmailControllerAWS.supplierMessageList(order);
 
         //Getting link for supplier to confirm
-        String link = "<h3><a href='http://ec2-54-254-209-18.ap-southeast-1.compute.amazonaws.com:8080/VSMS/OrderConfirmation.jsp?order_id=" + order.getOrder_id() + "'>Confirm here!</a></h3>";
-        //Having additional mail for the localhost (assuming that it develops on local host
-        link += "<h6><a href='http://localhost:8080/VSMS/OrderConfirmation.jsp?order_id=" + order.getOrder_id() + "'>Local Deployment (to be deleted once finalized)</a></h6>";
+        String link = "<h3><a href='http://vsms-env.us-west-2.elasticbeanstalk.com/OrderConfirmation.jsp?order_id=" + order.getOrder_id() + "'>Confirm here!</a></h3>";
 
-        EmailController.sendMessageToSuppliers(vendor, order, suppOrderMap, link);
-        EmailController.sendMessageToVendor(vendor, order, suppOrderMap, "");
+        EmailControllerAWS.sendMessageToSuppliers(vendor, order, suppOrderMap, link);
+        EmailControllerAWS.sendMessageToVendor(vendor, order, suppOrderMap, "");
     }
 
     //Convert the orders into message string for each supplier
@@ -120,7 +117,7 @@ public class EmailController {
             messageText.append("<hr>");
             messageText.append("<h5>" + suppOrderMap.get(supplier_id) + "</h5>");
             messageText.append("<font color=\"red\">Total price is : $" + UtilityController.convertDoubleToCurrString(OrderController.createAggFinalPrice(order.getOrderlines())) + "</font>");
-            messageText.append("<br><br><b>Special Request:</b> " + order.getSpecial_request());
+            messageText.append("<b>Special Request:</b> " + order.getSpecial_request());
         }
 
         sendMessage(vendor.getEmail(), "Your orders to suppliers", messageText + additional);
@@ -139,69 +136,44 @@ public class EmailController {
             messageText.append("<hr>");
             messageText.append("<h5>" + suppOrderMap.get(supplier_id) + "</h5>");
             messageText.append("<font color=\"red\">Total price is : $" + UtilityController.convertDoubleToCurrString(OrderController.createAggFinalPrice(order.getOrderlines())) + "</font>");
-            messageText.append("<br><br><b>Special Request:</b> " + order.getSpecial_request());
+            messageText.append("<b>Special Request:</b> " + order.getSpecial_request());
             sendMessage(supplier.getEmail(), "Order from Vendor " + vendor.getVendor_name(), messageText + additional);
         }
-    }
-
-    public static int resetPassword(String email) {
-        String randomPW = UtilityController.generateRandomPassword();
-        String encryptPW = DigestUtils.sha1Hex(randomPW);
-
-        int vendorUpdate = 0;
-        int suppUpdate = 0;
-
-        suppUpdate = UserDAO.updateSupplierPassword(email, encryptPW);
-        vendorUpdate = UserDAO.updateVendorPassword(email, encryptPW);
-        int result = vendorUpdate + suppUpdate;
-        if (result == 1) {
-            StringBuilder messageText = new StringBuilder("");
-            messageText.append("<h1>Foodingo Marketplace</h1>");
-            //messageText.append("<h3>email : " + vendor.getEmail() + "|| phone number: " + vendor.getTelephone_number() + "</h3>");
-            messageText.append("<h3>Password reset</h3>");
-            messageText.append("<hr>");
-            messageText.append("<h5>We have requested a password request for this account.</h5>");
-            messageText.append("<h5>Your new password: " + randomPW + "</h5>");
-            messageText.append("<hr>");
-            messageText.append("<h5>We look forward to being of service again!</h5>");
-            sendMessage(email, "Foodingo Marketplace Password Reset", messageText.toString());
-        }
-
-        return vendorUpdate + suppUpdate;
     }
 
 //    This method is to send a general message to an email with subject and message string
     public static void sendMessage(String toEmail, String subject, String messageHTMLString) {
 
-        //Sending to Google SMTP Port
-        String SMTP_PORT = "465";
-        String SSL_FACTORY = "javax.net.ssl.SSLSocketFactory";
-
         //Get the session object  
-        Properties props = new Properties();
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.ssl.enable", "true");
-        props.put("mail.smtp.host", host);
-        props.put("mail.smtp.auth", "true");
+        Properties props = System.getProperties();
+        System.setProperty("line.separator", "\r\n");
+        props.put("mail.transport.protocol", "smtp");
+        props.put("mail.smtp.port", port);
+        props.setProperty("mail.smtp.host", host);
+        props.setProperty("mail.smtp.user", user);
+        props.setProperty("mail.smtp.password", password);
+        props.setProperty("mail.smtps.auth", "true");
         props.put("mail.debug", "true");
-        props.put("mail.smtp.port", SMTP_PORT);
-        props.put("mail.smtp.socketFactory.port", SMTP_PORT);
-        props.put("mail.smtp.socketFactory.class", SSL_FACTORY);
-        props.put("mail.smtp.socketFactory.fallback", "false");
+        props.put("mail.smtp.starttls.enable", "true");
+        props.put("mail.smtp.starttls.required", "true");
+        props.put("mail.smtps.ssl.enable", "true");
 
-        Session session = Session.getInstance(props, new GMailAuthenticator(user, password));
+        Session session = Session.getDefaultInstance(props);
+        session.setDebug(true);
 
         //Compose the message  
         try {
             MimeMessage message = new MimeMessage(session);
 
-            message.setFrom(new InternetAddress(user));
-            message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+            message.setFrom(new InternetAddress(from));
+            message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
 
             message.setSubject(subject);
             message.setContent(messageHTMLString, "text/html");
             //send the message  
-            Transport.send(message);
+            Transport transport = session.getTransport();
+            transport.connect(host, user, password);
+            transport.sendMessage(message, message.getAllRecipients());
 
             System.out.println("Message is delivered");
         } catch (MessagingException e) {

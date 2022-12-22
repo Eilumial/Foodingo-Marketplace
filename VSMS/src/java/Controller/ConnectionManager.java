@@ -1,10 +1,12 @@
 package Controller;
 
-
-
+import java.io.IOException;
 import java.sql.*;
 import java.util.Properties;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -18,46 +20,37 @@ public class ConnectionManager {
     private static String dbUser;
     private static String dbPassword;
     private static String dbURL;
+    private static String awsDbURL;
+    private static String sshEC2URL;
 
     static {
-        // grab environment variable
-        String host = System.getenv("OPENSHIFT_MYSQL_DB_HOST");
+//         grab environment variable this is for Openshift
+        //dbURL = grabOpenshiftEnvironment();
+// grap environment variable for AWS
+        try {
+//            //Insert input stream here
+            InputStream is = ConnectionManager.class.getResourceAsStream(PROPS_FILENAME);
+            Properties props = new Properties();
+            props.load(is);
 
-        if (host != null) {
-            // this is production environment
-            // obtain database connection properties from environment variables
-            String port = System.getenv("OPENSHIFT_MYSQL_DB_PORT");
-            String dbName = System.getenv("OPENSHIFT_APP_NAME");
-            dbUser = System.getenv("OPENSHIFT_MYSQL_DB_USERNAME");
-            dbPassword = System.getenv("OPENSHIFT_MYSQL_DB_PASSWORD");
+//            Grab RDS Environment for AWS if it is RDS
+//            awsDbURL =grabAWSRDSEnvironment(props);
+            //            Grab SSH Environment for AWS EC2 
+//            grabSSHEC2Url(props);
 
+            // load localhost database connection details
+            String host = props.getProperty("db.host");
+            String port = props.getProperty("db.port");
+            String dbName = props.getProperty("db.name");
+            dbUser = props.getProperty("db.user");
+            dbPassword = props.getProperty("db.password");
             dbURL = "jdbc:mysql://" + host + ":" + port + "/" + dbName;
+        } catch (Exception ex) {
+            // unable to load properties file
+            String message = "Unable to load '" + PROPS_FILENAME + "'.";
 
-        } else {
-
-            try {
-                // Retrieve properties from connection.properties via the CLASSPATH
-                // WEB-INF/classes is on the CLASSPATH
-                InputStream is = ConnectionManager.class.getResourceAsStream(PROPS_FILENAME);
-                Properties props = new Properties();
-                props.load(is);
-
-                // load database connection details
-                host = props.getProperty("db.host");
-                String port = props.getProperty("db.port");
-                String dbName = props.getProperty("db.name");
-                dbUser = props.getProperty("db.user");
-                dbPassword = props.getProperty("db.password");
-
-                dbURL = "jdbc:mysql://" + host + ":" + port + "/" + dbName;
-            } catch (Exception ex) {
-                // unable to load properties file
-                String message = "Unable to load '" + PROPS_FILENAME + "'.";
-
-                System.out.println(message);
-                Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, message, ex);
-                throw new RuntimeException(message, ex);
-            }
+            Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, message, ex);
+            throw new RuntimeException(message, ex);
         }
 
         try {
@@ -66,12 +59,13 @@ public class ConnectionManager {
             // unable to load properties file
             String message = "Unable to find JDBC driver for MySQL.";
 
-            System.out.println(message);
             Logger.getLogger(ConnectionManager.class.getName()).log(Level.SEVERE, message, ex);
             throw new RuntimeException(message, ex);
         }
 
     }
+
+   
 
     /**
      * Gets a connection to the database
@@ -86,9 +80,11 @@ public class ConnectionManager {
         Logger
                 .getLogger(ConnectionManager.class
                         .getName()).log(Level.INFO, message);
-
-        return DriverManager.getConnection(dbURL, dbUser, dbPassword);
-
+        if (awsDbURL != null) {
+            return DriverManager.getConnection(awsDbURL);
+        } else {
+            return DriverManager.getConnection(dbURL, dbUser, dbPassword);
+        }
     }
 
     /**
@@ -129,5 +125,51 @@ public class ConnectionManager {
                     .getName()).log(Level.WARNING,
                             "Unable to close Connection", ex);
         }
+        
     }
+
+    private static boolean isLocalhost() {
+        try {
+            URL myURL = new URL("http://localhost");
+            // also you can put a port 
+            //  URL myURL = new URL("http://localhost:8080");
+            URLConnection myURLConnection = myURL.openConnection();
+            myURLConnection.connect();
+            return true;
+        } catch (MalformedURLException e) {
+            // new URL() failed
+            return false;
+        } catch (IOException e) {
+            // openConnection() failed
+            return false;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+//ENVIRONMENT SETTING (if not using localhost)
+     public static String grabOpenshiftEnvironment() {
+
+        String host = System.getenv("OPENSHIFT_MYSQL_DB_HOST");
+
+        // this is production environment
+        // obtain database connection properties from environment variables
+        String port = System.getenv("OPENSHIFT_MYSQL_DB_PORT");
+        String dbName = System.getenv("OPENSHIFT_APP_NAME");
+        dbUser = System.getenv("OPENSHIFT_MYSQL_DB_USERNAME");
+        dbPassword = System.getenv("OPENSHIFT_MYSQL_DB_PASSWORD");
+
+        return "jdbc:mysql://" + host + ":" + port + "/" + dbName;
+    }
+    private static String grabAWSRDSEnvironment(Properties props) {
+        String host = props.getProperty("AWS_MYSQL_DB_HOST");
+        String port = props.getProperty("AWS_MYSQL_DB_PORT");
+        String dbName = props.getProperty("AWS_APP_NAME");
+        dbUser = props.getProperty("AWS_MYSQL_DB_USERNAME");
+        dbPassword = props.getProperty("AWS_MYSQL_DB_PASSWORD");
+        return "jdbc:mysql://" + host + ":"
+                + port + "/" + dbName + "?user=" + dbUser + "&password=" + dbPassword;
+    }
+
+   
+
 }

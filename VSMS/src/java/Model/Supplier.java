@@ -13,8 +13,11 @@ public class Supplier {
     private int area_code;
     private int telephone_number;
     private String address;
+    private int zipcode;
+    private int min_leadtime;
+    private int max_leadtime;
 
-    public Supplier(int supplier_id, String password, String supplier_name, String supplier_description, String supplier_type, String email, int area_code, int telephone_number, String address) {
+    public Supplier(int supplier_id, String password, String supplier_name, String supplier_description, String supplier_type, String email, int area_code, int telephone_number, String address, int zipcode, int min_leadtime, int max_leadtime) {
         this.supplier_id = supplier_id;
         this.password = password;
         this.supplier_name = supplier_name;
@@ -24,7 +27,35 @@ public class Supplier {
         this.area_code = area_code;
         this.telephone_number = telephone_number;
         this.address = address;
+        this.zipcode = zipcode;
+        this.min_leadtime = min_leadtime;
+        this.max_leadtime = max_leadtime;
     }
+
+    public int getZipcode() {
+        return zipcode;
+    }
+
+    public void setZipcode(int zipcode) {
+        this.zipcode = zipcode;
+    }
+
+    public int getMin_leadtime() {
+        return min_leadtime;
+    }
+
+    public void setMin_leadtime(int min_leadtime) {
+        this.min_leadtime = min_leadtime;
+    }
+
+    public int getMax_leadtime() {
+        return max_leadtime;
+    }
+
+    public void setMax_leadtime(int max_leadtime) {
+        this.max_leadtime = max_leadtime;
+    }
+
 
     public String getEmail() {
         return email;
@@ -99,7 +130,7 @@ public class Supplier {
     }
 
     public String toString() {
-        return "Supplier ID: " + supplier_id + ", name: " + supplier_name + ", password: " + password + ", type: " + supplier_type + " description " + supplier_description + ", email: " + email + " telephone_number " + area_code + telephone_number + " address " + address;
+        return "Supplier ID: " + supplier_id + ", name: " + supplier_name + ", password: " + password + ", type: " + supplier_type + " description " + supplier_description + ", email: " + email + " telephone_number " + area_code + telephone_number + " address " + address +" zipcode "+zipcode+" min leadtime "+min_leadtime+" max leadtime "+max_leadtime;
     }
 
     @Override

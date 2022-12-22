@@ -12,6 +12,7 @@ import java.util.Set;
 /**
  *
  * @author David
+ * 
  */
 public class Dish {
     private int dish_id;
@@ -73,6 +74,21 @@ public class Dish {
 
     public void setIngredientQuantity(HashMap<Ingredient, ArrayList<String>> ingredientQuantity) {
         this.ingredientQuantity = ingredientQuantity;
+    }
+    
+    public void addIngredient(Ingredient ingredient, String quantity, String unit){
+        ArrayList<String> list=new ArrayList<String>();
+        list.add(quantity);
+        list.add(unit);
+        ingredientQuantity.put(ingredient,list);
+    }
+    
+    public void deleteIngredient(Ingredient ingredient){
+        ingredientQuantity.remove(ingredient);
+    }
+    
+    public void deleteAll(){
+        ingredientQuantity.clear();
     }
 
     @Override

@@ -3,6 +3,8 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+import Controller.IngredientController;
+import DAO.IngredientDAO;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.HashMap;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import DAO.UserDAO;
 import Model.*;
+import javax.servlet.http.HttpSession;
 /**
  *
  * @author TC
@@ -25,6 +28,7 @@ public class AutoCompleteServlet extends HttpServlet {
     private ServletContext context;
     private UserDAO compData = new UserDAO();
     private HashMap suppliers = compData.getSuppliers();
+    
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -73,7 +77,10 @@ public class AutoCompleteServlet extends HttpServlet {
 
         String action = request.getParameter("action");
         String targetId = request.getParameter("id");
+        String isSupplier = request.getParameter("searchType");
         StringBuffer sb = new StringBuffer();
+        HttpSession session = request.getSession();
+        //String isSupplier =(String) session.getAttribute("isSupplier");
 
         if (targetId != null) {
             targetId = targetId.trim().toLowerCase();
@@ -82,51 +89,98 @@ public class AutoCompleteServlet extends HttpServlet {
         }
 
         boolean namesAdded = false;
-        if (action.equals("complete")) {
+        if(isSupplier!=null && isSupplier.equals("true")){
+            if (action.equals("complete")) {
 
-            // check if user sent empty string
-            if (!targetId.equals("")) {
+                // check if user sent empty string
+                if (!targetId.equals("")) {
 
-                Iterator it = suppliers.keySet().iterator();
+                    Iterator it = suppliers.keySet().iterator();
 
-                while (it.hasNext()) {
-                    String id = (String) it.next();
-                    Supplier supplier = (Supplier) suppliers.get(id);
+                    while (it.hasNext()) {
+                        String id = (String) it.next();
+                        Supplier supplier = (Supplier) suppliers.get(id);
 
-                    if (supplier.getSupplier_name().toLowerCase().contains(targetId)
-                            || // targetId matches last name
-                            supplier.getSupplier_type().toLowerCase().contains(targetId)
-                            /*|| // targetId matches full name
+                        if (supplier.getSupplier_name().toLowerCase().contains(targetId)
+                                || // targetId matches last name
+                                supplier.getSupplier_type().toLowerCase().contains(targetId) /*|| // targetId matches full name
                             supplier.getFirstName().toLowerCase().concat(" ")
-                            .concat(supplier.getLastName().toLowerCase()).contains(targetId))*/
-                            )
-                            {
+                            .concat(supplier.getLastName().toLowerCase()).contains(targetId))*/) {
 
-                        sb.append("<composer>");
-                        sb.append("<id>" + supplier.getSupplier_id() + "</id>");
-                        sb.append("<supplierName>" + supplier.getSupplier_name() + "</supplierName>");
-                        sb.append("<supplierType>" + supplier.getSupplier_type() + "</supplierType>");
-                        sb.append("</composer>");
-                        namesAdded = true;
+                            sb.append("<composer>");
+                            sb.append("<id>" + supplier.getSupplier_id() + "</id>");
+                            sb.append("<supplierName>" + supplier.getSupplier_name() + "</supplierName>");
+                            sb.append("<supplierType>" + supplier.getSupplier_type() + "</supplierType>");
+                            sb.append("</composer>");
+                            namesAdded = true;
+                        }
                     }
                 }
-            }
 
-            if (namesAdded) {
-                response.setContentType("text/xml");
-                response.setHeader("Cache-Control", "no-cache");
-                response.getWriter().write("<composers>" + sb.toString() + "</composers>");
-            } else {
-                //nothing to show
-                response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                if (namesAdded) {
+                    response.setContentType("text/xml");
+                    response.setHeader("Cache-Control", "no-cache");
+                    response.getWriter().write("<composers>" + sb.toString() + "</composers>");
+                } else {
+                    //nothing to show
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                }
             }
-        }
-        if (action.equals("lookup")) {
+            if (action.equals("lookup")) {
 
-            // put the target supplier in the request scope to display 
-            if ((targetId != null) && suppliers.containsKey(targetId.trim())) {
-                request.setAttribute("supplier", suppliers.get(targetId));
-                context.getRequestDispatcher("/supplier.jsp").forward(request, response);
+                // put the target supplier in the request scope to display 
+                if ((targetId != null) && suppliers.containsKey(targetId.trim())) {
+                    request.setAttribute("supplier", suppliers.get(targetId));
+                    context.getRequestDispatcher("/SupplierSearch.jsp").forward(request, response);
+                }
+            }
+        }else{
+            suppliers=IngredientController.autoCompleteIngredient(1);
+            if (action.equals("complete")) {
+
+                // check if user sent empty string
+                if (!targetId.equals("")) {
+
+                    Iterator it = suppliers.keySet().iterator();
+
+                    while (it.hasNext()) {
+                        String id = (String) it.next();
+                        //temp removal ------ Supplier supplier = (Supplier) suppliers.get(id);
+                        Ingredient ingredient = (Ingredient) suppliers.get(id);
+                        //temp removal-----if (supplier.getSupplier_name().toLowerCase().contains(targetId)
+                        if (ingredient.getName().toLowerCase().contains(targetId)) //temp removal-----|| // targetId matches last name
+                        //temp removal-----supplier.getSupplier_type().toLowerCase().contains(targetId)
+                        /*|| // targetId matches full name
+                            supplier.getFirstName().toLowerCase().concat(" ")
+                            .concat(supplier.getLastName().toLowerCase()).contains(targetId))*/ //)
+                        {
+
+                            sb.append("<composer>");
+                            sb.append("<id>" + /*supplier.getSupplier_id()*/ id + "</id>");
+                            sb.append("<supplierName>" + /*supplier.getSupplier_name()*/ ingredient.getName() + "</supplierName>");
+                            sb.append("<supplierType>" + /*supplier.getSupplier_type()*/ UserDAO.getSupplierById(ingredient.getSupplier_id()).getSupplier_name() + "</supplierType>");
+                            sb.append("</composer>");
+                            namesAdded = true;
+                        }
+                    }
+                }
+
+                if (namesAdded) {
+                    response.setContentType("text/xml");
+                    response.setHeader("Cache-Control", "no-cache");
+                    response.getWriter().write("<composers>" + sb.toString() + "</composers>");
+                } else {
+                    //nothing to show
+                    response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+                }
+            }
+            if (action.equals("lookup")) {
+
+                // put the target supplier in the request scope to display 
+                if ((targetId != null) && suppliers.containsKey(targetId.trim())) {
+                    request.setAttribute("ingredient", suppliers.get(targetId));
+                    context.getRequestDispatcher("/SupplierSearch.jsp").forward(request, response);
+                }
             }
         }
     }
