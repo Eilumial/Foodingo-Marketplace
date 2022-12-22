@@ -4,7 +4,6 @@
     display:flex;
     flex-direction:column;
     flex:1;
-    justify-content:space-between;
 }
 .chat{
     height: 100%;
@@ -13,13 +12,14 @@
 .chat-messages{
     border: black red;
 }
+
 .chat-header{
     background-color:black;
     color:white;
     text-align:center;
 }
 .chat-toolbar{
-    background-color: blueviolet;
+    background-color: rgba(250, 0, 0, 0.4);
     color:white;
     text-align:center;
 }
@@ -46,3 +46,4 @@
     margin: 0px; }
 .chat ul .chat-name {
     margin-right: 10px; }
+

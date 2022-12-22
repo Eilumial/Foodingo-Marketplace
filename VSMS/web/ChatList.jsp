@@ -1,5 +1,8 @@
+<%@page import="java.util.ArrayList"%>
+<%@page import="Controller.UserController"%>
 <html>
     <head>
+        <%@ include file="protect.jsp" %>
         <!--CSS-->
         <!-- Import CDN for semantic UI -->    
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.css"/>
@@ -17,23 +20,43 @@
         <link rel="stylesheet" type="text/css" href="css/chatstylesheet.css">
 
     </head>
+    <%        Vendor currentVendor = (Vendor) session.getAttribute("currentVendor");
+        //in case current vendor does not exist
+        if (currentVendor == null) {
+            currentVendor = UserController.retrieveVendorByID(1);
+        }
+        //this supplier list indicates the favorite supplier only
+        ArrayList<Supplier> supplierList = UserController.retrieveSupplierListByVendor(currentVendor.getVendor_id());
+        // TODO: improving it by inputting those that have established communication
 
-    <body>
-        <form action="ChatVendor.jsp" method="GET" id="chat">
-            <input type="hidden" value="FreshFoodz" name="hiddenvalue" id="hiddenvalue"/>
+    %>
 
-            <ul class ="list-group">
-                <li class ="list-group-item"><h1>Contact Lists</h1></li>
-                <li class ="list-group-item" name= "FreshFoodz" onclick="submitFunction('FreshFoodz')"><h3>FreshFoodz</h3></li>
-                <li class ="list-group-item" name= "FreshFruitz" onclick="submitFunction('FreshFruitz')"><h3>FreshFruitz</h3></li>
-                <li class ="list-group-item" name= "Only A Matter Of Thyme" onclick="submitFunction('Only A Matter Of Thyme')"><h3>Only A Matter Of Thyme</h3></li>
-            </ul>
-        </form>
-
-        <!--JAVASCRIPT-->
-        <!--for general Javascript please refer to the main js. For others, please just append the script line below-->
-        <script src="js/chatjavascript.js"></script>
+    <body class="background">
 
 
+        <div class="transparency">
+            <div class="ui segment" style="left:5%;width:90%">
+
+                <%@ include file="Navbar.jsp" %>
+                <!--This is for vendor-->
+                <%if (currentVendor != null) {%>
+                <form action="ChatVendor.jsp" method="GET" id="chat">
+                    <input type="hidden" name="hiddenvalue" id="hiddenvalue"/>
+                    <h1>Contact Lists</h1>
+                    <ul class ="list-group" id="chatlist">
+                        <%for (Supplier supplier : supplierList) {%>
+                        <!--<li class ="list-group-item" name= "<%=supplier.getSupplier_name()%>" onclick="submitFunction('<%=supplier.getSupplier_name()%>')"><h3><%=supplier.getSupplier_name()%></h3></li>-->
+                                <%}%>           
+                    </ul>
+                </form>
+                <%}%>
+                <!--JAVASCRIPT-->
+                <!--for general Javascript please refer to the main js. For others, please just append the script line below-->
+                <script src="js/chatjavascript.js"></script>
+                <script>
+                              initializeChatList("<%=currentVendor.getVendor_name()%>", "vendor");  
+                </script>
+            </div>
+        </div>
     </body>
 </html>

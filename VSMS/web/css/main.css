@@ -1,15 +1,85 @@
+
+
 .background{
     /*
     background-color: tomato;
     
     background: linear-gradient(130deg, #00004d 20%, black 100%) no-repeat center center fixed;
-   */
+    */
 
-   background-image: url("../resource/pictures/grass.jpg");
-   background-size: 1920px 1080px;
-   
-    background-repeat: no-repeat;
+
+    background: url("../resource/pictures/macaron9.jpg") no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    top: 0; 
+    left: 0; 
+    min-width: 100%;
+    min-height: 100%;
+
+
+}
+
+
+
+.ingredientImage{
+    height: 300px;
+    width:300px;
+}
+
+.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.inputfile + label {
+    font-size: 1.25em;
+    font-weight: 700;
+
+    display: inline-block;
+}
+
+
+body{
+    /*
+    background-color: tomato;
     
+    background: linear-gradient(130deg, #00004d 20%, black 100%) no-repeat center center fixed;
+    */
+
+
+    background: url("../resource/pictures/macaron9.jpg") no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    top: 0; 
+    left: 0; 
+    min-width: 100%;
+    min-height: 100%;
+
+
+}
+
+
+
+.logo{
+    max-height: 250px;
+    max-width: 300px
+}
+
+
+.loginLogo{
+    max-height: 250px;
+    max-width: 300px
+}
+
+.transparency{
     opacity: 0.9;
 }
 
@@ -44,16 +114,49 @@ a {
 }
 
 .flex-container {
-  /* We first create a flex layout context */
-  display: flex;
-  
-  /* Then we define the flow direction and if we allow the items to wrap 
-   * Remember this is the same as:
-   * flex-direction: row;
-   * flex-wrap: wrap;
-   */
-  flex-flow: row wrap;
-  
-  /* Then we define how is distributed the remaining space */
-  justify-content: space-around;
+    /* We first create a flex layout context */
+    display: flex;
+
+    /* Then we define the flow direction and if we allow the items to wrap 
+     * Remember this is the same as:
+     * flex-direction: row;
+     * flex-wrap: wrap;
+     */
+    flex-flow: row wrap;
+
+    /* Then we define how is distributed the remaining space */
+    justify-content: space-around;
 }
+
+
+/*For error handling by JQUERY*/
+.my-error-class {
+    color:red;
+}
+.my-valid-class {
+    color:green;
+}
+
+a:link {
+    color: black;
+}
+
+/* visited link */
+a:visited {
+    color: black;
+}
+
+/* mouse over link */
+a:hover {
+    color: hotpink;
+}
+
+/* selected link */
+a:active {
+    color: black;
+}
+
+a{
+    color: black;
+}
+

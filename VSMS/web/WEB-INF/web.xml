@@ -1,12 +1,71 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">
+    <welcome-file-list>
+        <welcome-file>/Login.jsp</welcome-file>
+    </welcome-file-list>
     <servlet>
         <servlet-name>AutoCompleteServlet</servlet-name>
         <servlet-class>AutoCompleteServlet</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>LogoutServlet</servlet-name>
+        <servlet-class>Servlet.LogoutServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddIngredientServlet</servlet-name>
+        <servlet-class>Servlet.AddIngredientServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RegisterAServlet</servlet-name>
+        <servlet-class>Servlet.RegisterAServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>RegisterBServlet</servlet-name>
+        <servlet-class>Servlet.RegisterBServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EditIngredientServlet</servlet-name>
+        <servlet-class>Servlet.EditIngredientServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>DeleteIngredientServlet</servlet-name>
+        <servlet-class>Servlet.DeleteIngredientServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>ResetPWServlet</servlet-name>
+        <servlet-class>Servlet.ResetPWServlet</servlet-class>
+    </servlet>
     <servlet-mapping>
         <servlet-name>AutoCompleteServlet</servlet-name>
         <url-pattern>/autocomplete</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>LogoutServlet</servlet-name>
+        <url-pattern>/LogoutServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>AddIngredientServlet</servlet-name>
+        <url-pattern>/AddIngredientServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RegisterAServlet</servlet-name>
+        <url-pattern>/RegisterAServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>RegisterBServlet</servlet-name>
+        <url-pattern>/RegisterBServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>EditIngredientServlet</servlet-name>
+        <url-pattern>/EditIngredientServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>DeleteIngredientServlet</servlet-name>
+        <url-pattern>/DeleteIngredientServlet</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>ResetPWServlet</servlet-name>
+        <url-pattern>/ResetPWServlet</url-pattern>
     </servlet-mapping>
     <session-config>
         <session-timeout>

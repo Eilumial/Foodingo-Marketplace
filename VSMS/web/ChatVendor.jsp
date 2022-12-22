@@ -1,5 +1,7 @@
+<%@page import="Controller.UserController"%>
 <html>
     <head>
+        <%@ include file="protect.jsp" %>
         <!--CSS-->
         <!-- Import CDN for semantic UI -->    
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.css"/>
@@ -14,30 +16,49 @@
 
         <!--for general CSS please refer to the main css. For others, please just append the link line below-->
         <link rel="stylesheet" type="text/css" href="css/main.css">
-        <!--<link rel="stylesheet" type="text/css" href="css/chatstylesheet.css">-->
-        <link rel="stylesheet" type="text/css" href="css/chatlayout.css"
+        <link rel="stylesheet" type="text/css" href="css/chatlayout.css">
     </head>
-    <body>
-        <!-- CHAT MARKUP -->
-        <div class="chat">
-            <header class="chat-header">Vendor Chat (https://vsms.firebaseio.com/)</header>
+    <%         Vendor currentVendor = (Vendor) session.getAttribute("currentVendor");
+        //in case current vendor does not exist
+        if (currentVendor == null) {
+            currentVendor = UserController.retrieveVendorByID(1);
+        }
+        String supplierName = request.getParameter("hiddenvalue");
+        //if there is an order id from Order Context, then please push a message
+        String order_idStr = request.getParameter("order_id");
+    %>
+    <body class="background">
+        <div class="transparency">
 
-            <div class='chat-toolbar'>
-                Sending to: <h3>FreshFoodz</h3>
+            <div class="ui segment" style="left:5%;width:90%">
+                <!-- CHAT MARKUP -->
+                <div class="chat">
+                    <header class="chat-header">Vendor Chat (https://foodingomarketplace.firebaseio.com)  <button class="ui deny inverted green button"><a href="Home.jsp"><font color="white">Go to Home</font></a></button><button class="ui deny inverted green button"><a href="ChatList.jsp"><font color="white">Go to ChatList</font></a></button></header>
+
+                    <div class='chat-toolbar'>
+                        Sending to: <h3><%=supplierName%></h3>
+                    </div>
+
+                    <ul id='messages' class="chat-messages"></ul>
+
+                    <footer class="chat-footer">
+                        <input type='text' id='messageInput'  placeholder='Type a message...'>
+                    </footer>
+                </div>
             </div>
-
-            <ul id='messages' class="chat-messages"></ul>
-
-            <footer class="chat-footer">
-                <input type='text' id='messageInput'  placeholder='Type a message...'>
-            </footer>
         </div>
-
         <!--CHAT JAVASCRIPT-->
         <!--for general Javascript please refer to the main js. For others, please just append the script line below-->
         <script src="js/chatjavascript.js"></script>
         <script>
-            initializeVendorChat("Christina", "FreshFoodz");
+            initializeVendorChat("<%=currentVendor.getVendor_name()%>", "<%=supplierName%>");
+            
+            //This is to push order id in case of the historical
+            <%
+                if (order_idStr != null) {
+            %>
+                    pushMessage("<%=currentVendor.getVendor_name()%>", "<%=supplierName%>","<a href=Invoice.jsp?order_id="+<%=order_idStr%>+">Hi, I would like to inquire this order (id=<%=order_idStr%>)</a>");
+            <%}%>
         </script>
 
 

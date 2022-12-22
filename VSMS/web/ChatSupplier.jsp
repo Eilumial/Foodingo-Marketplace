@@ -1,6 +1,8 @@
 
+<%@page import="Controller.UserController"%>
 <html>
-     <head>
+    <head>
+        <%@ include file="protect_supplier.jsp" %>
         <!--CSS-->
         <!-- Import CDN for semantic UI -->    
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/1.11.8/semantic.min.css"/>
@@ -15,33 +17,44 @@
 
         <!--for general CSS please refer to the main css. For others, please just append the link line below-->
         <link rel="stylesheet" type="text/css" href="css/main.css">
-        <!--<link rel="stylesheet" type="text/css" href="css/chatstylesheet.css">-->
         <link rel="stylesheet" type="text/css" href="css/chatlayout.css">
     </head>
-    <body>
+     <%            //ArrayList<Order> orderList = OrderController.retrieveOrderList(1);
+            Supplier s = (Supplier) session.getAttribute("currentSupplier");
+            if (s == null) {
+                s = UserController.retrieveSupplierByID(1);
+            }
+            String supplierName = s.getSupplier_name();
+            String vendorName = request.getParameter("vendor_name");
+    %>
+    <bodyclass="background">
+        <div class="transparency">
 
-        <!-- CHAT MARKUP -->
+            <div class="ui segment" style="left:5%;width:90%">
 
-        <H1>Welcome FreshFoodz</h1>
-        <div class="chat">
-            <header class="chat-header">Supplier Chat (https://vsms.firebaseio.com/)</header>
+                <!-- CHAT MARKUP -->
 
-            <div class='chat-toolbar'>
-                Sending to: <h3>Christina</h3>
+                <H1>Welcome FreshFoodz</h1>
+                <div class="chat">
+                    <header class="chat-header">Supplier Chat (https://foodingomarketplace.firebaseio.com) <button class="ui deny inverted green button"><a href="SupplierHome.jsp">Go to Home</a></button><button class="ui deny inverted green button"><a href="ChatList.jsp">Go to ChatList</a></button></header>
+ 
+                    <div class='chat-toolbar'>
+                        Sending to: <h3><%=vendorName%></h3>
+                    </div>
+
+                    <ul id='messages' class="chat-messages"></ul>
+
+                    <footer>
+                        <input type='text' id='messageInput'  placeholder='Type a message...'>
+                    </footer>
+                </div>
             </div>
-
-            <ul id='messages' class="chat-messages"></ul>
-
-            <footer>
-                <input type='text' id='messageInput'  placeholder='Type a message...'>
-            </footer>
         </div>
-
         <!--CHAT JAVASCRIPT-->
         <!--for general Javascript please refer to the main js. For others, please just append the script line below-->
         <script src="js/chatjavascript.js"></script>
         <script>
-            initializeSupplierChat("FreshFoodz", "Christina");
+            initializeSupplierChat("<%=supplierName%>", "<%=vendorName%>");
         </script>
     </body>
 </html>
